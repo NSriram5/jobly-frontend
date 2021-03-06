@@ -1,4 +1,5 @@
 import React from "react";
+import { NavLink } from 'react-router-dom'
 import { useParams, useHistory, Redirect } from "react-router-dom";
 import "./Navigation.css"
 
@@ -11,9 +12,9 @@ function Navbar({links}) {
                 {links.map(link=>{
                     return(
                         <li key={link.title} className="nav-item mr-4">
-                            <a className="nav-link {link.active?'active':''}" href={link.link}>
+                            <NavLink className="nav-link {link.active?'active':''}" to={link.link} onClick={link.onClick?link.onClick:()=>0}>
                                 {link.title}
-                            </a>
+                            </NavLink>
                         </li>
                     )
                 })}

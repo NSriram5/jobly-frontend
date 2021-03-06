@@ -1,11 +1,9 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 
 import Login from "./Login";
-import Signup from "./Signup";
+import RegistrationForm from "./RegistrationForm";
 import Profile from "./Profile";
-import Jobs from "./Jobs";
-import Companies from "./Companies";
 import Company from "./Company";
 import Main from "./Main";
 import NavBar from "./NavBar";
@@ -17,13 +15,41 @@ import JoblyApi from "./api";
 import SearchableList from "./SearchableList";
 
 function App() {
-  const getCompanyList = JoblyApi.getCompanies;
-  const getCompany = JoblyApi.getCompany;
-  const getJobList = JoblyApi.getJobs;
-  const getJob = JoblyApi.getJob;
+  let jobly = new JoblyApi
+  const [JoblyObj, setJoblyObj] = useState(jobly)
+  const [token,setToken] = useState(localStorage.getItem("token")||"");
+
+  useEffect(()=>{
+    localStorage.setItem("token",token)
+
+    if (token !== ""){
+      const newJoblyObj = JoblyObj;
+      newJoblyObj.token = token;
+      setJoblyObj(newJoblyObj);
+    }
+  },[token])
+  
+  function logout(){
+    setToken("");
+  }  
+  
+  const getCompanyList = JoblyObj.getCompanies.bind(JoblyObj);
+  const getCompany = JoblyObj.getCompany.bind(JoblyObj);
+  const getJobList = JoblyObj.getJobs.bind(JoblyObj);
+  const getJob = JoblyObj.getJob.bind(JoblyObj);
+  const register =JoblyObj.postNewRegistration.bind(JoblyObj);
+  const login = JoblyObj.postNewLogin.bind(JoblyObj);
+
 
   function navlinks(){
-    const navItems = [{title:"Login",link:"/login",active:false},{title:"Signup",link:"/signup",active:false},{title:"Profile",link:"/profile",active:false},{title:"Jobs",link:"/jobs",active:false},{title:"Companies",link:"/companies",active:false}]
+    let navItems = [];
+    if (token===""){
+      navItems=[{title:"Login",link:"/login",active:false},{title:"Signup",link:"/signup",active:false}]
+    } else if (token==="debugging"){
+      navItems = [{title:"Login",link:"/login",active:false},{title:"Signup",link:"/signup",active:false},{title:"Profile",link:"/profile",active:false},{title:"Jobs",link:"/jobs",active:false},{title:"Companies",link:"/companies",active:false}]
+    } else {
+      navItems = [{title:"Profile",link:"/profile",active:false},{title:"Jobs",link:"/jobs",active:false},{title:"Companies",link:"/companies",active:false},{title:"Logout",link:"/logout",active:false,onClick:logout}]
+    }
     return navItems
   }
 
@@ -32,10 +58,13 @@ function App() {
     <NavBar links={navlinks()}/>
     <Switch>
       <Route exact path="/login">
-        <Login/>
+        <Login login={login} setToken={setToken}/>
+      </Route>
+      <Route exact path="/logout">
+        <Redirect to="/"/>
       </Route>
       <Route exact path="/signup">
-        <Signup/>
+        <RegistrationForm register={register} setToken={setToken}/>
       </Route>
       <Route exact path="/profile">
         <Profile/>

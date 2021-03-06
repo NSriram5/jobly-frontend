@@ -12,9 +12,13 @@ const BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:3001";
 
 class JoblyApi {
     // the token for interactive with the API will be stored here.
-    static token;
+    static token = "";
 
-    static async request(endpoint, data = {}, method = "get") {
+    // constructor(token = "") {
+    //     this.token = token
+    // }
+
+    async request(endpoint, data = {}, method = "get") {
         console.debug("API Call:", endpoint, data, method);
 
         const url = `${BASE_URL}/${endpoint}`;
@@ -35,29 +39,39 @@ class JoblyApi {
 
     /** Get details on a company by handle. */
 
-    static async getCompany(handle) {
-        let res = await JoblyApi.request(`companies/${handle}`);
+    async getCompany(handle) {
+        let res = await this.request(`companies/${handle}`);
         return res.company;
     }
 
-    static async getCompanies() {
-        let res = await JoblyApi.request(`companies`);
+    async getCompanies() {
+        let res = await this.request(`companies`);
         return res.companies;
     }
 
-    static async getJob(id) {
-        let res = await JoblyApi.request(`jobs/${id}`);
+    async getJob(id) {
+        let res = await this.request(`jobs/${id}`);
         return res.job;
     }
 
-    static async getJobs() {
-        let res = await JoblyApi.request(`jobs`);
+    async getJobs() {
+        let res = await this.request(`jobs`);
         return res.jobs;
     }
 
-    static async getCompanyJobs(handle) {
-        let res = await JoblyApi.request(`jobs?companyHandle=${handle}`);
+    async getCompanyJobs(handle) {
+        let res = await this.request(`jobs?companyHandle=${handle}`);
         return res.jobs;
+    }
+
+    async postNewRegistration(newUser) {
+        let res = await this.request(`auth/register`, newUser, "post");
+        return res.token;
+    }
+
+    async postNewLogin(login) {
+        let res = await this.request(`auth/token`, login, "post");
+        return res.token;
     }
 
     // obviously, you'll add a lot here ...
