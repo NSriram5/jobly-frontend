@@ -19,6 +19,10 @@ function SearchableList({type, getList}) {
         }
     },[loading]);
     
+    useEffect(()=>{
+        setLoading(true);
+    },[type]);
+
     if (loading){
         return(
             <>

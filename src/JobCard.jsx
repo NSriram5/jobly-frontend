@@ -6,7 +6,7 @@ function JobCard({job}){
 
     return(
         <div className="JobCard card">
-                <div className="card-body" key={job.id}>
+            <div className="card-body">
                         
                 <h6 className="card-title">{job.title}
                 </h6>

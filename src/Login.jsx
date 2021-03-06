@@ -21,10 +21,11 @@ function Login({login,setToken}) {
 
     const handleSubmit = evt => {
         evt.preventDefault();
-        const token = login(formData);
-        setToken(token);
-        setFormData(blankForm);
-        history.push("/companies");
+        const success = login(formData);
+        if (success){
+            setFormData(blankForm);
+            history.push("/");
+        }
     }
 
     return (
