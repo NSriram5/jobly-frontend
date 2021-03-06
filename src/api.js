@@ -36,23 +36,28 @@ class JoblyApi {
     /** Get details on a company by handle. */
 
     static async getCompany(handle) {
-        let res = await this.request(`companies/${handle}`);
+        let res = await JoblyApi.request(`companies/${handle}`);
         return res.company;
     }
 
     static async getCompanies() {
-        let res = await this.request(`companies`);
+        let res = await JoblyApi.request(`companies`);
         return res.companies;
     }
 
     static async getJob(id) {
-        let res = await this.request(`jobs/${id}`);
-        return res.job
+        let res = await JoblyApi.request(`jobs/${id}`);
+        return res.job;
     }
 
     static async getJobs() {
-        let res = await this.request(`jobs`);
-        return res.jobs
+        let res = await JoblyApi.request(`jobs`);
+        return res.jobs;
+    }
+
+    static async getCompanyJobs(handle) {
+        let res = await JoblyApi.request(`jobs?companyHandle=${handle}`);
+        return res.jobs;
     }
 
     // obviously, you'll add a lot here ...
