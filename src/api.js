@@ -38,7 +38,6 @@ class JoblyApi {
     // Individual API routes
 
     /** Get details on a company by handle. */
-
     async getCompany(handle) {
         let res = await this.request(`companies/${handle}`);
         return res.company;
@@ -54,13 +53,13 @@ class JoblyApi {
         return res.job;
     }
 
-    async getJobs() {
-        let res = await this.request(`jobs`);
-        return res.jobs;
+    async getUser(username) {
+        let res = await this.request(`user/${username}`);
+        return res.user;
     }
 
-    async getCompanyJobs(handle) {
-        let res = await this.request(`jobs?companyHandle=${handle}`);
+    async getJobs() {
+        let res = await this.request(`jobs`);
         return res.jobs;
     }
 

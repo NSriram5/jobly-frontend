@@ -29,17 +29,35 @@ function App() {
     }
   },[token])
   
-  function logout(){
-    setToken("");
-  }  
+  
   
   const getCompanyList = JoblyObj.getCompanies.bind(JoblyObj);
   const getCompany = JoblyObj.getCompany.bind(JoblyObj);
   const getJobList = JoblyObj.getJobs.bind(JoblyObj);
   const getJob = JoblyObj.getJob.bind(JoblyObj);
-  const register =JoblyObj.postNewRegistration.bind(JoblyObj);
-  const login = JoblyObj.postNewLogin.bind(JoblyObj);
+  const backendRegister =JoblyObj.postNewRegistration.bind(JoblyObj);
+  const backendLogin = JoblyObj.postNewLogin.bind(JoblyObj);
 
+  function logout(){
+    setToken("");
+  }
+
+  function register(newUser){
+    const token = backendRegister(newUser);
+    debugger;
+    const user = JoblyObj.getUser(newUser.username)
+    setToken(token);
+    return true;
+  }
+
+  function login(credentials){
+    const token = backendLogin(credentials);
+    const user = JoblyObj.getUser(credentials.username);
+    debugger;
+    setToken(token);
+    return true;
+  }
+  
 
   function navlinks(){
     let navItems = [];
@@ -48,7 +66,7 @@ function App() {
     } else if (token==="debugging"){
       navItems = [{title:"Login",link:"/login",active:false},{title:"Signup",link:"/signup",active:false},{title:"Profile",link:"/profile",active:false},{title:"Jobs",link:"/jobs",active:false},{title:"Companies",link:"/companies",active:false}]
     } else {
-      navItems = [{title:"Profile",link:"/profile",active:false},{title:"Jobs",link:"/jobs",active:false},{title:"Companies",link:"/companies",active:false},{title:"Logout",link:"/logout",active:false,onClick:logout}]
+      navItems = [{title:"Companies",link:"/companies",active:false},{title:"Jobs",link:"/jobs",active:false},{title:"Profile",link:"/profile",active:false},{title:"Logout",link:"/logout",active:false,onClick:logout}]
     }
     return navItems
   }
@@ -72,8 +90,8 @@ function App() {
       <Route exact path="/jobs">
         <SearchableList getList={getJobList} type="jobs"/>
       </Route>
-        <Route exact path="/companies/:handle">
-        <Company/>
+      <Route exact path="/companies/:handle">
+        <Company get={getCompany}/>
       </Route>
       <Route exact path="/companies">
         <SearchableList getList={getCompanyList} type="companies"/>

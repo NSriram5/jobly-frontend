@@ -22,10 +22,12 @@ function RegistrationForm({register,setToken}) {
 
     const handleSubmit = evt => {
         evt.preventDefault();
-        const token = register(formData);
-        setToken(token);
-        setFormData(blankForm);
-        history.push("/");
+        const success = register(formData);
+        if (success){
+            setFormData(blankForm);
+            history.push("/");
+        }
+        
     }
     return (
         <div className="pt-5">

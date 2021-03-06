@@ -15,9 +15,9 @@ function Jobs({items, term}) {
 
     return (
         <div className="JobList">
-            {filteredItems.map((job) => {
+            {filteredItems.map((job,index) => {
                 return (
-                    <JobCard key={job.id} job={job} />
+                    <JobCard key={index} job={job} />
                 )
             })}
         </div>
