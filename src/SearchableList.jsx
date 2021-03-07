@@ -4,7 +4,7 @@ import Jobs from "./Jobs";
 import Companies from "./Companies";
 import { useParams, useHistory, Redirect } from "react-router-dom";
 
-function SearchableList({type, getList}) {
+function SearchableList({type, getList, jobApply}) {
     const [term,setTerm] = useState("");
     const [loading,setLoading] = useState(true);
     const [items, setItems] = useState([]);
@@ -33,11 +33,12 @@ function SearchableList({type, getList}) {
     }
 
     if (type == "jobs"){
+
         return(
             <div className="pt-5">
                 <div className="col-md-8 offset-md-2">
                     <Search searchUpdate = {setTerm}/>
-                    <Jobs items = {items} term= {term}/>
+                    <Jobs items={items} term={term} jobApply={jobApply}/>
                 </div>
             </div>
         )

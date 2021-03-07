@@ -11,7 +11,7 @@ function RegistrationForm({register}) {
         email:""
     }
     const [formData,setFormData] = useState(blankForm);
-    const [errors,setErrors]=useState(blankForm);
+    const [errors,setErrors]=useState([]);
 
     const handleChange = evt => {
         const {name,value} = evt.target;
@@ -20,15 +20,33 @@ function RegistrationForm({register}) {
         }));
     }
 
+    function printErrors(){
+        if (errors.length!=0){
+            return(
+                <div className="alert alert-danger" role="alert">
+                    {errors.map((err,index)=>{return(
+                        <p key={index} className="mb-0 small">{err}</p>
+                        )
+                    })}
+                </div>
+            )
+        } else {
+            return(null);
+        }
+    }
+
     const handleSubmit = async (evt) => {
         evt.preventDefault();
+        await setErrors([]);
         const success = await register(formData);
-        if (success){
+        if (success===true){
             setFormData(blankForm);
             history.push("/companies");
+        } else {
+            await setErrors(success)
         }
-        
     }
+
     return (
         <div className="pt-5">
         <div className="SignupForm">
@@ -57,6 +75,7 @@ function RegistrationForm({register}) {
                                 <label>Email</label>
                                 <input type="email" name="email" className="form-control" value={formData["email"]} onChange={handleChange} autoComplete="email"/>
                             </div>
+                            {printErrors()}
                             <button type="submit" className="btn btn-primary float-right">Submit</button>
                         </form>
                     </div>

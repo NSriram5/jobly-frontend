@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Jobs from "./Jobs";
 import { useParams, useHistory, Redirect } from "react-router-dom";
 
-function Company({get}) {
+function Company({get, jobApply}) {
     const [loading, setLoading] = useState(true);
     const [company,setCompany] = useState({jobs:[]});
     const {handle}=useParams();
@@ -23,7 +23,7 @@ function Company({get}) {
             <div className="CompanyDetail col-md-8 offset-md-2">
             <h4>{company.name}</h4>
             <p>{company.description}</p>
-            <Jobs items={company.jobs} term=""/>
+            <Jobs items={company.jobs} term="" jobApply={jobApply}/>
             </div>
         </div>
     );

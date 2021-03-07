@@ -67,7 +67,9 @@ class JoblyApi {
         try {
             let res = await this.request(`auth/register`, newUser, "post");
             return res.token;
-        } catch (e) {}
+        } catch (e) {
+            return { error: e };
+        }
     }
 
     async postNewLogin(login) {
@@ -94,7 +96,8 @@ class JoblyApi {
 
     async userJobApply(application) {
         try {
-            let res = await this.request(`users/${application.username}/jobs/${application.jobId}`);
+            let res = await this.request(`users/${application.username}/jobs/${application.jobId}`, {}, "post");
+            return res;
         } catch (e) {
             return { error: "Invalid job application attempt" };
         }
