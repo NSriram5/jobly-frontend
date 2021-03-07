@@ -13,11 +13,11 @@ function Companies({ items, term }) {
         
     }
 
-
+    let a = filteredItems.map((item)=>item.handle);
+    console.log(a);
     return (
         <div className="CompanyList">
-            Companies
-            {filteredItems.map((company) => {
+            {filteredItems.map((company,index) => {
                 return (
                     <CompanyCard key={company.handle} company={company} />
                 )

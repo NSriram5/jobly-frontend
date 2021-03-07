@@ -37,7 +37,7 @@ function App() {
   const getCompanyList = JoblyObj.getCompanies.bind(JoblyObj);
   const getCompany = JoblyObj.getCompany.bind(JoblyObj);
   const getJobList = JoblyObj.getJobs.bind(JoblyObj);
-  const getJob = JoblyObj.getJob.bind(JoblyObj);
+  const userJobApply = JoblyObj.userJobApply.bind(JoblyObj);
   const backendRegister =JoblyObj.postNewRegistration.bind(JoblyObj);
   const backendLogin = JoblyObj.postNewLogin.bind(JoblyObj);
   const userPatch = JoblyObj.patchUser.bind(JoblyObj);
@@ -49,22 +49,24 @@ function App() {
 
   const loadToken = async (type,obj)=>{
     let newtoken;
-    if (type=="register"){
-      newtoken = await backendRegister(obj);
-    } else if (type=="login"){
-      newtoken = await backendLogin(obj);
-    } else if (type=="patch"){
+    try{
+      if (type=="register"){
+        newtoken = await backendRegister(obj);
+      } else if (type=="login"){
+        newtoken = await backendLogin(obj);
+      } 
+      if (newtoken.error){
+        return newtoken.error
+      }
+      setToken(newtoken);
+      loadUser(obj.username);
+      return true;
+    } catch(err){
+        return err;
     }
-    if (newtoken.error){
-      return false;
-    }
-    setToken(newtoken);
-    loadUser(obj.username);
-    return true;
   }
 
   const updateUser = async(user)=>{
-    debugger;
     const authSuccess = await backendLogin({username:user.username,password:user.password});
     if (authSuccess.error){
       return false;
@@ -74,6 +76,15 @@ function App() {
       return false;
     }
     loadUser(user.username);
+    return true;
+  }
+
+  const jobApply = async(username,jobId)=>{
+    const applySuccess = await userJobApply({username,jobId});
+    if (applySuccess.error){
+      return false;
+    }
+    await loadUser(username);
     return true;
   }
 
@@ -121,10 +132,10 @@ function App() {
           <Profile updateUser={updateUser}/>
         </Route>
         <Route exact path="/jobs">
-          <SearchableList getList={getJobList} type="jobs"/>
+          <SearchableList getList={getJobList} jobApply={jobApply} type="jobs"/>
         </Route>
         <Route exact path="/companies/:handle">
-          <Company get={getCompany}/>
+          <Company get={getCompany} jobApply={jobApply}/>
         </Route>
         <Route exact path="/companies">
           <SearchableList getList={getCompanyList} type="companies"/>

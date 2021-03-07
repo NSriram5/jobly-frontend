@@ -2,7 +2,7 @@ import React from "react";
 import JobCard from "./JobCard";
 import { useParams, useHistory, Redirect } from "react-router-dom";
 
-function Jobs({items, term}) {
+function Jobs({items, term, jobApply}) {
     let filteredItems = items;
 
     if (term != "") {
@@ -17,7 +17,7 @@ function Jobs({items, term}) {
         <div className="JobList">
             {filteredItems.map((job,index) => {
                 return (
-                    <JobCard key={index} job={job} />
+                    <JobCard key={index} job={job} jobApply={jobApply}/>
                 )
             })}
         </div>

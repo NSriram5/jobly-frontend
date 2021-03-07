@@ -1,8 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import UserContext from "./userContext";
 import "./JobCard.css";
 
-function JobCard({job}){
+function JobCard({job, jobApply}){
+    const user = useContext(UserContext);
 
+    const filteredJobs = user.applications.filter(application=>application===job.id);
+    
+    const apply = ()=>{
+        jobApply(user.username,job.id);
+    }
 
     return(
         <div className="JobCard card">
@@ -13,7 +20,11 @@ function JobCard({job}){
                 <p>{job.companyHandle}</p>
                 <div><small>Salary: {job.salary}</small></div>
                 <div><small>Equity: {job.equity}</small></div>
-                <button className="btn btn-danger font-weight-bold text-uppercase float-right">Apply</button>
+                {filteredJobs.length>0?(
+                <button className="btn btn-danger font-weight-bold text-uppercase float-right" disabled={true}>Applied</button>
+                ):
+                <button className="btn btn-danger font-weight-bold text-uppercase float-right" onClick={apply}>Apply</button>
+                }
             </div>
 
         </div>
