@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useParams, useHistory, Redirect } from "react-router-dom";
 
-function RegistrationForm({register,setToken}) {
+function RegistrationForm({register}) {
     const history = useHistory();
     const blankForm = {
         username:"",
@@ -20,12 +20,12 @@ function RegistrationForm({register,setToken}) {
         }));
     }
 
-    const handleSubmit = evt => {
+    const handleSubmit = async (evt) => {
         evt.preventDefault();
-        const success = register(formData);
+        const success = await register(formData);
         if (success){
             setFormData(blankForm);
-            history.push("/");
+            history.push("/companies");
         }
         
     }
@@ -36,7 +36,7 @@ function RegistrationForm({register,setToken}) {
                 <h2 className="mb-3">Sign Up</h2>
                 <div className="card">
                     <div className="card-body">
-                        <form onChange={handleChange} onSubmit={handleSubmit}>
+                        <form onSubmit={handleSubmit}>
                             <div className="form-group">
                                 <label>Username</label>
                                 <input name="username" className="form-control" value={formData["username"]} onChange={handleChange} autoComplete="username"/>

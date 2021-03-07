@@ -54,7 +54,7 @@ class JoblyApi {
     }
 
     async getUser(username) {
-        let res = await this.request(`user/${username}`);
+        let res = await this.request(`users/${username}`);
         return res.user;
     }
 
@@ -64,16 +64,42 @@ class JoblyApi {
     }
 
     async postNewRegistration(newUser) {
-        let res = await this.request(`auth/register`, newUser, "post");
-        return res.token;
+        try {
+            let res = await this.request(`auth/register`, newUser, "post");
+            return res.token;
+        } catch (e) {}
     }
 
     async postNewLogin(login) {
-        let res = await this.request(`auth/token`, login, "post");
-        return res.token;
+        try {
+            let res = await this.request(`auth/token`, login, "post");
+            return res.token;
+        } catch (e) {
+            return { error: "Invalid login" }
+        }
     }
 
-    // obviously, you'll add a lot here ...
+    async patchUser(updatedUser) {
+        const username = updatedUser.username;
+        debugger
+        delete updatedUser.username;
+        try {
+            let res = await this.request(`users/${username}`, updatedUser, "patch");
+            updatedUser["username"] = username;
+            return res.user;
+        } catch (e) {
+            return { error: "Invalid password" }
+        }
+    }
+
+    async userJobApply(application) {
+        try {
+            let res = await this.request(`users/${application.username}/jobs/${application.jobId}`);
+        } catch (e) {
+            return { error: "Invalid job application attempt" };
+        }
+    }
+
 }
 
 // for now, put token ("testuser" / "password" on class)
