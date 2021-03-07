@@ -7,7 +7,7 @@ import Profile from "./Profile";
 import Company from "./Company";
 import Main from "./Main";
 import NavBar from "./NavBar";
-
+import UserContext from "./userContext";
 import logo from './logo.svg';
 import './App.css';
 
@@ -18,44 +18,76 @@ function App() {
   let jobly = new JoblyApi
   const [JoblyObj, setJoblyObj] = useState(jobly)
   const [token,setToken] = useState(localStorage.getItem("token")||"");
+  const [user,setUser] = useState(JSON.parse(localStorage.getItem("user"))||{})
 
   useEffect(()=>{
     localStorage.setItem("token",token)
-
     if (token !== ""){
       const newJoblyObj = JoblyObj;
       newJoblyObj.token = token;
       setJoblyObj(newJoblyObj);
+      console.log(token)
     }
   },[token])
-  
-  
-  
+
+  useEffect(()=>{
+    localStorage.setItem("user",JSON.stringify(user))
+  },[user])
+
   const getCompanyList = JoblyObj.getCompanies.bind(JoblyObj);
   const getCompany = JoblyObj.getCompany.bind(JoblyObj);
   const getJobList = JoblyObj.getJobs.bind(JoblyObj);
   const getJob = JoblyObj.getJob.bind(JoblyObj);
   const backendRegister =JoblyObj.postNewRegistration.bind(JoblyObj);
   const backendLogin = JoblyObj.postNewLogin.bind(JoblyObj);
+  const userPatch = JoblyObj.patchUser.bind(JoblyObj);
+
+  const loadUser = async (userName)=>{
+    const user = await JoblyObj.getUser(userName);
+    setUser(user);
+  }
+
+  const loadToken = async (type,obj)=>{
+    let newtoken;
+    if (type=="register"){
+      newtoken = await backendRegister(obj);
+    } else if (type=="login"){
+      newtoken = await backendLogin(obj);
+    } else if (type=="patch"){
+    }
+    if (newtoken.error){
+      return false;
+    }
+    setToken(newtoken);
+    loadUser(obj.username);
+    return true;
+  }
+
+  const updateUser = async(user)=>{
+    debugger;
+    const authSuccess = await backendLogin({username:user.username,password:user.password});
+    if (authSuccess.error){
+      return false;
+    }
+    const patchUser = await userPatch(user);
+    if (patchUser.error){
+      return false;
+    }
+    loadUser(user.username);
+    return true;
+  }
 
   function logout(){
     setToken("");
+    setUser({});
   }
 
   function register(newUser){
-    const token = backendRegister(newUser);
-    debugger;
-    const user = JoblyObj.getUser(newUser.username)
-    setToken(token);
-    return true;
+    return loadToken("register",newUser);
   }
 
   function login(credentials){
-    const token = backendLogin(credentials);
-    const user = JoblyObj.getUser(credentials.username);
-    debugger;
-    setToken(token);
-    return true;
+    return loadToken("login",credentials);
   }
   
 
@@ -73,34 +105,36 @@ function App() {
 
   return (
     <BrowserRouter>
-    <NavBar links={navlinks()}/>
-    <Switch>
-      <Route exact path="/login">
-        <Login login={login} setToken={setToken}/>
-      </Route>
-      <Route exact path="/logout">
-        <Redirect to="/"/>
-      </Route>
-      <Route exact path="/signup">
-        <RegistrationForm register={register} setToken={setToken}/>
-      </Route>
-      <Route exact path="/profile">
-        <Profile/>
-      </Route>
-      <Route exact path="/jobs">
-        <SearchableList getList={getJobList} type="jobs"/>
-      </Route>
-      <Route exact path="/companies/:handle">
-        <Company get={getCompany}/>
-      </Route>
-      <Route exact path="/companies">
-        <SearchableList getList={getCompanyList} type="companies"/>
-      </Route>
-      <Route exact path="/">
-        <Main/>
-      </Route>
-      <Redirect to="/" />
-    </Switch>
+      <UserContext.Provider value={user}>
+      <NavBar links={navlinks()}/>
+      <Switch>
+        <Route exact path="/login">
+          <Login login={login} setToken={setToken}/>
+        </Route>
+        <Route exact path="/logout">
+          <Redirect to="/"/>
+        </Route>
+        <Route exact path="/signup">
+          <RegistrationForm register={register} setToken={setToken}/>
+        </Route>
+        <Route exact path="/profile">
+          <Profile updateUser={updateUser}/>
+        </Route>
+        <Route exact path="/jobs">
+          <SearchableList getList={getJobList} type="jobs"/>
+        </Route>
+        <Route exact path="/companies/:handle">
+          <Company get={getCompany}/>
+        </Route>
+        <Route exact path="/companies">
+          <SearchableList getList={getCompanyList} type="companies"/>
+        </Route>
+        <Route exact path="/">
+          <Main/>
+        </Route>
+        <Redirect to="/" />
+      </Switch>
+      </UserContext.Provider>
     </BrowserRouter>
   );
 }

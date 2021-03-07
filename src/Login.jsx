@@ -19,12 +19,31 @@ function Login({login,setToken}) {
         }));
     }
 
-    const handleSubmit = evt => {
+    function printErrors(){
+        if (errors.username || errors.password){
+            return( 
+                <div className="alert alert-danger" role="alert">
+                    {errors.username?(
+                        <p className="mb-0 small">{errors.username}</p>
+                        ):null}
+                    {errors.password?(
+                        <p className="mb-0 small">{errors.password}</p>
+                        ):null}
+                </div>
+            )
+            }
+        else return(null);
+    }
+
+    const handleSubmit = async (evt) => {
         evt.preventDefault();
-        const success = login(formData);
+        const success = await login(formData);
         if (success){
             setFormData(blankForm);
-            history.push("/");
+            history.push("/companies");
+        }
+        else{
+            setErrors({username:"Invalid login"});
         }
     }
 
@@ -44,6 +63,7 @@ function Login({login,setToken}) {
                                     <label>Password</label>
                                     <input onChange={handleChange} type="password" value={formData["password"]} name="password" className="form-control" autoComplete="current-password" required=""/>
                                 </div>
+                                {printErrors()}
                                 <button className="btn btn-primary float-right">Submit</button>
                             </form>
                         </div>
